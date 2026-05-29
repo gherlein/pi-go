@@ -93,6 +93,10 @@ type model struct {
 	// Ctrl+C handling: show warning on first press, quit on second.
 	ctrlCCount int
 
+	// sidebarHidden hides the right panel so the chat area fills the terminal.
+	// Toggled with Ctrl+\.
+	sidebarHidden bool
+
 	// resizeAt records when the last WindowSizeMsg arrived. Key/paste input
 	// is suppressed briefly after resize to let terminal response sequences
 	// (OSC color replies, DECRPM, CPR) drain without leaking into the input.
@@ -638,6 +642,12 @@ func (m *model) handleKey(msg tea.KeyPressMsg) (tea.Model, tea.Cmd) {
 		return m, nil
 	}
 
+	// Ctrl+\ toggles the sidebar. Works during agent responses so output can be copied.
+	if key.Code == '\\' && key.Mod == tea.ModCtrl {
+		m.sidebarHidden = !m.sidebarHidden
+		return m, nil
+	}
+
 	if m.running || m.loading {
 		return m, nil
 	}
@@ -837,7 +847,7 @@ func (m *model) View() tea.View {
 		mainWidth = m.mainWidth()
 	}
 	sidebarWidth := m.width - mainWidth
-	showSidebar := sidebarWidth > 0
+	showSidebar := sidebarWidth > 0 && !m.sidebarHidden
 
 	// Render components.
 	m.inputModel.SetWidth(max(0, mainWidth-2))
@@ -1170,7 +1180,7 @@ func (m *model) mainWidth() int {
 	if m.width <= 0 {
 		return 1
 	}
-	if m.width > 80 {
+	if !m.sidebarHidden && m.width > 80 {
 		w := m.width - SidebarWidth
 		if w > 0 {
 			return w

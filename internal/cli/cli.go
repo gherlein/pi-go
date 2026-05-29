@@ -231,13 +231,16 @@ func buildRootRuntime(ctx context.Context, args []string) (rootRuntime, error) {
 	}
 
 	tokenTracker := guardrail.New(cfg.MaxDailyTokens)
-	ctxWindowSize := provider.ContextWindowSize(info.Model)
+	tokenTracker.SetContextWindowSize(provider.ContextWindowSize(info.Model))
 	if info.Ollama {
-		if n := provider.OllamaContextWindowSize(ctx, baseURL, info.Model); n > 0 {
-			ctxWindowSize = n
-		}
+		// Fetch the real context window size from Ollama in the background so
+		// it does not block TUI startup (large models can take seconds to respond).
+		go func() {
+			if n := provider.OllamaContextWindowSize(ctx, baseURL, info.Model); n > 0 {
+				tokenTracker.SetContextWindowSize(n)
+			}
+		}()
 	}
-	tokenTracker.SetContextWindowSize(ctxWindowSize)
 	llm = guardrail.WrapModel(llm, tokenTracker)
 
 	cwd, err := os.Getwd()

@@ -52,3 +52,5 @@ sandbox.log
 /coverage*
 /wiki/
 /hack/test/tb2/jobs/
+/docs/git-strategy.md
+/docs/pi-go-memory-usage.md

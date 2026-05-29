@@ -643,8 +643,9 @@ func (m *model) handleKey(msg tea.KeyPressMsg) (tea.Model, tea.Cmd) {
 	}
 
 	// Ctrl+/ toggles the sidebar. Works during agent responses so output can be copied.
-	// Ctrl+/ sends 0x1F (US) which the key table maps to Code '_' + ModCtrl.
-	if key.Code == '_' && key.Mod == tea.ModCtrl {
+	// Kitty protocol reports Ctrl+/ as code='/' with ModCtrl in the modifier bitfield.
+	// Use bitwise check because the terminal also reports NumLock state in Mod.
+	if key.Code == '/' && key.Mod&tea.ModCtrl != 0 {
 		m.sidebarHidden = !m.sidebarHidden
 		return m, nil
 	}

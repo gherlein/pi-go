@@ -645,7 +645,7 @@ func (m *model) handleKey(msg tea.KeyPressMsg) (tea.Model, tea.Cmd) {
 	// Ctrl+S toggles the sidebar. Works during agent responses so output can be copied.
 	// Uses a traditional single-byte Ctrl+letter to avoid Kitty protocol CSI leakage
 	// that occurs with keys like Ctrl+/ which use multi-byte escape sequences.
-	if key.Code == 's' && key.Mod == tea.ModCtrl {
+	if key.Code == 's' && key.Mod&tea.ModCtrl != 0 {
 		m.sidebarHidden = !m.sidebarHidden
 		return m, nil
 	}

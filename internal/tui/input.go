@@ -329,6 +329,7 @@ var slashCommands = []string{
 	"/rtk",
 	"/mcp",
 	"/restart",
+	"/sidebar",
 	"/exit",
 	"/quit",
 }
@@ -380,6 +381,8 @@ func slashCommandDesc(cmd string) string {
 		return "Test LLM connectivity"
 	case "/restart":
 		return "Restart pi process"
+	case "/sidebar":
+		return "Toggle sidebar panel"
 	case "/exit", "/quit":
 		return "Exit"
 	default:

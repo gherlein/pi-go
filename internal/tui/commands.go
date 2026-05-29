@@ -89,6 +89,9 @@ func (m *model) handleSlashCommand(input string) (tea.Model, tea.Cmd) {
 		return m.handlePingCommand(parts[1:])
 	case "/restart":
 		return m.handleRestartCommand()
+	case "/sidebar":
+		m.sidebarHidden = !m.sidebarHidden
+		return m, nil
 	case "/mcp":
 		m.handleMCPCommand()
 	case "/exit", "/quit":

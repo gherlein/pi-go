@@ -94,8 +94,9 @@ type model struct {
 	ctrlCCount int
 
 	// sidebarHidden hides the right panel so the chat area fills the terminal.
-	// Toggled with Ctrl+S.
-	sidebarHidden bool
+	// Toggled with Ctrl+S or /sidebar. sidebarToggledAt debounces Kitty key-repeat events.
+	sidebarHidden    bool
+	sidebarToggledAt time.Time
 
 	// resizeAt records when the last WindowSizeMsg arrived. Key/paste input
 	// is suppressed briefly after resize to let terminal response sequences
@@ -646,7 +647,10 @@ func (m *model) handleKey(msg tea.KeyPressMsg) (tea.Model, tea.Cmd) {
 	// Uses a traditional single-byte Ctrl+letter to avoid Kitty protocol CSI leakage
 	// that occurs with keys like Ctrl+/ which use multi-byte escape sequences.
 	if key.Code == 's' && key.Mod&tea.ModCtrl != 0 {
-		m.sidebarHidden = !m.sidebarHidden
+		if time.Since(m.sidebarToggledAt) > 300*time.Millisecond {
+			m.sidebarHidden = !m.sidebarHidden
+			m.sidebarToggledAt = time.Now()
+		}
 		return m, nil
 	}
 

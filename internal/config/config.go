@@ -260,7 +260,7 @@ func LoadMCPServersFrom(cwd string) []MCPServer {
 
 	// Project path overrides global (only if project file exists).
 	if projectPath := findNearestProjectFile(cwd, filepath.Join(".pi-go", "mcp.json")); projectPath != "" {
-		if projectServers := loadMCPServersFromFile(projectPath); projectServers != nil {
+		if projectServers := loadMCPServersFromFile(projectPath); len(projectServers) > 0 {
 			servers = projectServers
 		}
 	}

@@ -94,7 +94,7 @@ type model struct {
 	ctrlCCount int
 
 	// sidebarHidden hides the right panel so the chat area fills the terminal.
-	// Toggled with Ctrl+/.
+	// Toggled with Ctrl+S.
 	sidebarHidden bool
 
 	// resizeAt records when the last WindowSizeMsg arrived. Key/paste input
@@ -642,10 +642,10 @@ func (m *model) handleKey(msg tea.KeyPressMsg) (tea.Model, tea.Cmd) {
 		return m, nil
 	}
 
-	// Ctrl+/ toggles the sidebar. Works during agent responses so output can be copied.
-	// Kitty protocol reports Ctrl+/ as code='/' with ModCtrl in the modifier bitfield.
-	// Use bitwise check because the terminal also reports NumLock state in Mod.
-	if key.Code == '/' && key.Mod&tea.ModCtrl != 0 {
+	// Ctrl+S toggles the sidebar. Works during agent responses so output can be copied.
+	// Uses a traditional single-byte Ctrl+letter to avoid Kitty protocol CSI leakage
+	// that occurs with keys like Ctrl+/ which use multi-byte escape sequences.
+	if key.Code == 's' && key.Mod == tea.ModCtrl {
 		m.sidebarHidden = !m.sidebarHidden
 		return m, nil
 	}

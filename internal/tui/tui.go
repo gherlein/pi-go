@@ -94,7 +94,7 @@ type model struct {
 	ctrlCCount int
 
 	// sidebarHidden hides the right panel so the chat area fills the terminal.
-	// Toggled with Ctrl+\.
+	// Toggled with Ctrl+/.
 	sidebarHidden bool
 
 	// resizeAt records when the last WindowSizeMsg arrived. Key/paste input
@@ -642,8 +642,9 @@ func (m *model) handleKey(msg tea.KeyPressMsg) (tea.Model, tea.Cmd) {
 		return m, nil
 	}
 
-	// Ctrl+\ toggles the sidebar. Works during agent responses so output can be copied.
-	if key.Code == '\\' && key.Mod == tea.ModCtrl {
+	// Ctrl+/ toggles the sidebar. Works during agent responses so output can be copied.
+	// Ctrl+/ sends 0x1F (US) which the key table maps to Code '_' + ModCtrl.
+	if key.Code == '_' && key.Mod == tea.ModCtrl {
 		m.sidebarHidden = !m.sidebarHidden
 		return m, nil
 	}
